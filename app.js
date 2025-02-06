@@ -22,9 +22,11 @@ const port = process.env.PORT || 3000
 app.use(userRouters)
 
 
-app.listen(port, () => {
-    console.log(`Server running on port ${port}`)
-    
-})
+if (process.env.NODE_ENV !== 'test') {
+    app.listen(port, () => {
+        console.log(`Server running on port ${port}`)
+    })
+    dbConnect()
+}
 
-dbConnect()
+module.exports = app
