@@ -21,12 +21,13 @@ const port = process.env.PORT || 3000
 
 app.use(userRouters)
 
-
 if (process.env.NODE_ENV !== 'test') {
     app.listen(port, () => {
         console.log(`Server running on port ${port}`)
     })
     dbConnect()
+} else {
+    console.log('Running in test mode - database will be handled by test helper')
 }
 
 module.exports = app

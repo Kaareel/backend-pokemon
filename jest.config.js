@@ -1,11 +1,8 @@
 module.exports = {
   testEnvironment: 'node',
-  verbose: true,
-  collectCoverage: true,
-  coveragePathIgnorePatterns: [
-    '/node_modules/',
-    '/tests/',
-    '/config/'
-  ],
-  testMatch: ['**/__tests__/**/*.js', '**/?(*.)+(spec|test).js'],
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+  globalSetup: '<rootDir>/jest.global-setup.js',
+  globalTeardown: '<rootDir>/jest.global-teardown.js',
+  testTimeout: 5000,
+  verbose: true
 };
