@@ -5,10 +5,6 @@ const Pokemon = require("../../models/pokemon");
 const { mockPokemon } = require("../config/setup");
 
 describe("GET /pokemon/:id", () => {
-  beforeEach(async () => {
-    await Pokemon.deleteMany({});
-  });
-
   describe("when pokemon exists", () => {
     let existingPokemon;
 
@@ -20,19 +16,19 @@ describe("GET /pokemon/:id", () => {
       const response = await request(app).get(
         `/pokemon/${existingPokemon._id}`
       );
-
+      expect(response.body.data).toMatchObject({
+        ...mockPokemon,
+      });
       expect(response.status).toBe(200);
-      expect(response.body.data).toEqual(
-        expect.objectContaining({
-          _id: existingPokemon._id.toString(),
-          name: mockPokemon.name,
-          thumbnailUrl: mockPokemon.thumbnailUrl,
-          largeImageUrl: mockPokemon.largeImageUrl,
-          types: mockPokemon.types,
-          abilities: mockPokemon.abilities,
-          stats: mockPokemon.stats,
-        })
-      );
+      expect(response.body.data._id).toEqual(existingPokemon._id.toString());
+      expect(response.body.data).toMatchObject({
+        name: mockPokemon.name,
+        thumbnailUrl: mockPokemon.thumbnailUrl,
+        largeImageUrl: mockPokemon.largeImageUrl,
+        types: mockPokemon.types,
+        abilities: mockPokemon.abilities,
+        stats: mockPokemon.stats,
+      });
     });
   });
 

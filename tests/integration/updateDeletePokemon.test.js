@@ -5,10 +5,6 @@ const Pokemon = require("../../models/pokemon");
 const { mockPokemon } = require("../config/setup");
 
 describe("Pokemon Update and Delete Operations", () => {
-  beforeEach(async () => {
-    await Pokemon.deleteMany({});
-  });
-
   describe("PUT /pokemon/:id", () => {
     let existingPokemon;
 

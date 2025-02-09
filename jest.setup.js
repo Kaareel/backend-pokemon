@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 beforeAll(async () => {
   const mongoUri = process.env.MONGO_URI;
@@ -11,7 +11,14 @@ beforeAll(async () => {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   });
+});
 
+afterEach(async () => {
+  const collections = mongoose.connection.collections;
+
+  for (const key in collections) {
+    await collections[key].deleteMany();
+  }
 });
 
 afterAll(async () => {
