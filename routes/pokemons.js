@@ -12,4 +12,4 @@ router.put(`/${path}/:id`, controllers.updateData)
 
 router.delete(`/${path}/:id`, controllers.deleteData)
 
-module.exports = router
+module.exports = router 
