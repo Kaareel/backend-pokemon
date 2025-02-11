@@ -9,26 +9,74 @@ const parseId = (id) => {
 
 exports.getData = async (req, res) => {
     try {
-        const data = await pokemonModel.find(); // Consulta los datos en la colección "pokemons"
-        res.status(200).send({ data });
+        const { types, abilities } = req.query;   
+        let { page, limit } = req.query; 
+        console.log("tipo", types);
+        
+        if (!page || Number.isNaN(Number(page)) || page < 1) page = 1;
+        if (!limit || Number.isNaN(Number(limit)) || limit < 1) limit = 10;
+        
+        const pageNumber = Number(page);
+        const pageLimit = Number(limit);
+        const skip = (pageNumber - 1) * pageLimit;
+
+        const filter= {};
+         if (types) {
+            filter.types = { $in: types.split(',').map(type => type.toLowerCase()) };
+        }
+         if (abilities) {
+            filter.abilities = { $in: abilities.split(',').map(ability => ability.toLowerCase()) };
+        }
+        const data = await pokemonModel.find(filter)
+            .skip(skip)
+            .limit(pageLimit);
+            const totalCount = await pokemonModel.countDocuments(filter);   
+            res.status(200).send({
+                data,
+                pagination: {
+                    total: totalCount,
+                    page: pageNumber,
+                    limit: pageLimit,
+                    totalPages: Math.ceil(totalCount / pageLimit),
+                },
+            });
     } catch (error) {
         console.error('Error al obtener los datos:', error);
         res.status(500).send({ error: 'Error al obtener los datos' });
     }
-};
+};  
 
-exports.insertData = async (req, res) => {
-try {
-    const { name, img, thumbnailUrl, largeImageUrl, types, abilities, stats } = req.body;
-    const newPokemon = { name: name, img: img, thumbnailUrl: thumbnailUrl, largeImageUrl: largeImageUrl, abilities: abilities, stats: stats};
+    exports.insertData = async (req, res) => {
+    try {
+        const { name, img, thumbnailUrl, largeImageUrl, types, abilities, stats } = req.body;
+        if (!stats.hp || stats.hp <= 0) {
+            return res.status(400).send({ error: "HP must be greater than 0" });
+        }
+        if (!stats.attack || stats.attack <= 0) {
+            return res.status(400).send({ error: "Attack must be greater than 0" });
+        }
+        if (!stats.defense || stats.defense <= 0) {
+            return res.status(400).send({ error: "Defense must be greater than 0" });
+        }
+        if (!stats.specialAttack || stats.specialAttack <= 0) {
+            return res.status(400).send({ error: "Special Attack must be greater than 0" });
+        }
+        if (!stats.specialDefense || stats.specialDefense <= 0) {
+            return res.status(400).send({ error: "Special Defense must be greater than 0" });
+        }
+        if (!stats.speed || stats.speed <= 0) {
+            return res.status(400).send({ error: "Speed must be greater than 0" });
+        }
+        const newPokemon = { name: name, img: img, thumbnailUrl: thumbnailUrl, largeImageUrl: largeImageUrl, types, abilities: abilities, stats: stats};
 
-    const data = await pokemonModel.create(newPokemon);
+        const data = await pokemonModel.create(newPokemon);
 
-    res.send({ data });
-} catch (err) {
-    res.status(400).send({ error: err.message });
- }
-}
+
+        res.status(201).send({ data });
+    } catch (err) {
+        res.status(400).send({ error: err.message });
+    }
+    }
 
 exports.updateData = async (req, res) => {
     try {

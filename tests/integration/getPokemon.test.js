@@ -61,6 +61,7 @@ describe("GET /pokemon", () => {
         { param: "ability", value: "Blaze", expectedName: "Charmander" },
       ];
 
+      // biome-ignore lint/complexity/noForEach: <explanation>
       testFilters.forEach(({ param, value, expectedName }) => {
         it(`should filter pokemon by ${param}: ${value}`, async () => {
           const response = await request(app).get(`/pokemon?${param}=${value}`);
@@ -103,6 +104,7 @@ describe("GET /pokemon", () => {
         },
       ];
 
+      // biome-ignore lint/complexity/noForEach: <explanation>
       testPaginationCases.forEach(({ params, expectedLength, expectedPagination }) => {
         it(`should paginate correctly with limit ${params.limit} and page ${params.page}`, async () => {
           const response = await request(app).get(
@@ -138,6 +140,7 @@ describe("GET /pokemon", () => {
       },
     ];
 
+    // biome-ignore lint/complexity/noForEach: <explanation>
     errorCases.forEach(({ description, query, expectedError }) => {
       it(`should handle ${description}`, async () => {
         const response = await request(app).get(`/pokemon?${query}`);
