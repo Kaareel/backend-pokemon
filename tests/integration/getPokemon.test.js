@@ -9,14 +9,14 @@ describe("GET /pokemon", () => {
     {
       ...mockPokemon,
       name: "Charmander",
-      types: ["Fire"],
-      abilities: ["Blaze"],
+      types: ["fire"],
+      abilities: ["blaze"],
     },
     {
       ...mockPokemon,
-      name: "Pikachu",
-      types: ["Electric"],
-      abilities: ["Static"],
+      name: "Mew",
+      types: ["psychic"],
+      abilities: ["synchronize"],
     },
   ];
 
@@ -55,17 +55,17 @@ describe("GET /pokemon", () => {
 
     describe("filtering", () => {
       const testFilters = [
-        { param: "type", value: "Fire", expectedName: "Charmander" },
-        { param: "type", value: "Electric", expectedName: "Pikachu" },
-        { param: "ability", value: "Static", expectedName: "Pikachu" },
-        { param: "ability", value: "Blaze", expectedName: "Charmander" },
+        { param: "types", value: "Fire", expectedName: "Charmander" },
+        { param: "types", value: "Electric", expectedName: "Pikachu" },
+        { param: "types", value: "Psychic", expectedName: "Mew" },
+        { param: "abilities", value: "Static", expectedName: "Pikachu" },
+        { param: "abilities", value: "Blaze", expectedName: "Charmander" },
+        { param: "abilities", value: "Synchronize", expectedName: "Mew" },
       ];
-
       // biome-ignore lint/complexity/noForEach: <explanation>
       testFilters.forEach(({ param, value, expectedName }) => {
         it(`should filter pokemon by ${param}: ${value}`, async () => {
           const response = await request(app).get(`/pokemon?${param}=${value}`);
-
           expect(response.status).toBe(200);
           expect(response.body.data).toHaveLength(1);
           expect(response.body.data[0].name).toBe(expectedName);
@@ -73,7 +73,7 @@ describe("GET /pokemon", () => {
       });
 
       it("should return empty array when no matches", async () => {
-        const response = await request(app).get("/pokemon?type=Rock");
+        const response = await request(app).get("/pokemon?types=Rock");
 
         expect(response.status).toBe(200);
         expect(response.body.data).toEqual([]);

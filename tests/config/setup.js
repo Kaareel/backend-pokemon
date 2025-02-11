@@ -5,8 +5,8 @@ const mockPokemon = {
   name: "Pikachu",
   thumbnailUrl: "http://example.com/pikachu-thumb.jpg",
   largeImageUrl: "http://example.com/pikachu-large.jpg",
-  types: ["Electric"],
-  abilities: ["Static", "Lightning Rod"],
+  types: ["electric"],
+  abilities: ["static", "lightning Rod"],
   stats: {
     hp: 35,
     attack: 55,
