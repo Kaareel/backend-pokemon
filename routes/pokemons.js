@@ -6,6 +6,8 @@ const path = 'pokemon'
 
 router.get(`/${path}`, controllers.getData)
 
+router.get(`/${path}/:id`, controllers.getById)
+
 router.post(`/${path}`, controllers.insertData)
 
 router.put(`/${path}/:id`, controllers.updateData)

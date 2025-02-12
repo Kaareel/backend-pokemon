@@ -38,18 +38,18 @@ describe("GET /pokemon", () => {
       await Pokemon.create(testPokemon);
     });
 
-    it("should return all pokemon with essential fields", async () => {
-      const response = await request(app).get("/pokemon");
+      it("should return all pokemon with essential fields", async () => {
+        const response = await request(app).get("/pokemon");
 
-      expect(response.status).toBe(200);
-      expect(response.body.data).toHaveLength(testPokemon.length);
-      expect(response.body.data[0]).toEqual(
-        expect.objectContaining({
-          _id: expect.any(String),
-          name: mockPokemon.name,
-          thumbnailUrl: mockPokemon.thumbnailUrl,
-          types: mockPokemon.types,
-        })
+        expect(response.status).toBe(200);
+        expect(response.body.data).toHaveLength(testPokemon.length);
+        expect(response.body.data[0]).toEqual(
+          expect.objectContaining({
+            _id: expect.any(String),
+            name: mockPokemon.name,
+            thumbnailUrl: mockPokemon.thumbnailUrl,
+            types: mockPokemon.types,
+          })
       );
     });
 
