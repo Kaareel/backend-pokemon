@@ -1,5 +1,5 @@
 const axios = require('axios');
-const Pokemon = require('../models/pokemon');
+const Pokemon = require('../src/models/pokemon.model');
 
 const fetchPokemonDetails = async () => {
   try {

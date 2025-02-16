@@ -1,8 +1,8 @@
 const request = require('supertest');
 const mongoose = require('mongoose');
-const app = require('../../app');
-const Pokemon = require('../../models/pokemon');
-const { mockPokemon } = require('../config/setup');
+const app = require('../../src/app');
+const Pokemon = require('../../src/models/pokemon.model');
+const { mockPokemon } = require('../fixtures/pokemon.fixtures');
 
 describe('GET /pokemon/:id', () => {
   describe('when pokemon exists', () => {
@@ -16,18 +16,15 @@ describe('GET /pokemon/:id', () => {
       const response = await request(app).get(
         `/pokemon/${existingPokemon._id}`,
       );
-      expect(response.body.data).toMatchObject({
-        ...mockPokemon,
-      });
+
       expect(response.status).toBe(200);
-      expect(response.body.data._id).toEqual(existingPokemon._id.toString());
-      expect(response.body.data).toMatchObject({
-        name: mockPokemon.name,
-        thumbnailUrl: mockPokemon.thumbnailUrl,
-        largeImageUrl: mockPokemon.largeImageUrl,
+      expect(response.body.data).toEqual({
+        ...mockPokemon,
+        _id: existingPokemon._id.toString(),
         types: mockPokemon.types,
         abilities: mockPokemon.abilities,
-        stats: mockPokemon.stats,
+        createdAt: expect.any(String),
+        updatedAt: expect.any(String),
       });
     });
   });
@@ -38,15 +35,14 @@ describe('GET /pokemon/:id', () => {
       const response = await request(app).get(`/pokemon/${fakeId}`);
 
       expect(response.status).toBe(404);
-      expect(response.body.error).toBeTruthy();
+      expect(response.body.error).toBe('Pokemon not found');
     });
 
     it('should return 400 for invalid id format', async () => {
       const response = await request(app).get('/pokemon/invalid-id');
 
       expect(response.status).toBe(400);
-      expect(response.body.error).toBeTruthy();
-      expect(response.body.error).toMatch(/invalid.*id/i);
+      expect(response.body.error).toBe('Invalid ID format');
     });
   });
 });

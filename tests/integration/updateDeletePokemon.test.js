@@ -1,7 +1,7 @@
 const request = require('supertest');
 const mongoose = require('mongoose');
-const app = require('../../app');
-const Pokemon = require('../../models/pokemon');
+const app = require('../../src/app');
+const Pokemon = require('../../src/models/pokemon.model');
 const { mockPokemon } = require('../config/setup');
 
 describe('Pokemon Update and Delete Operations', () => {

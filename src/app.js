@@ -3,10 +3,10 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const app = express();
-const dbConnect = require('./config/mongo');
-const userRouters = require('./routes/pokemons');
-const { seedDatabase } = require('./scripts/seed');
-const Pokemon = require('./models/pokemon');
+const dbConnect = require('../config/mongodb.config');
+const pokemonRoutes = require('./routes/pokemon.routes');
+const { seedDatabase } = require('../scripts/database.seed');
+const Pokemon = require('./models/pokemon.model');
 
 app.use(
   bodyParser.json({
@@ -24,7 +24,7 @@ app.use(cors());
 
 const port = process.env.PORT || 3000;
 
-app.use(userRouters);
+app.use(pokemonRoutes);
 
 const startServer = async () => {
   if (process.env.NODE_ENV !== 'test') {
