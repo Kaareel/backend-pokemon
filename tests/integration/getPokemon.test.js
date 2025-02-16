@@ -1,22 +1,22 @@
-const request = require("supertest");
-const app = require("../../app");
-const Pokemon = require("../../models/pokemon");
-const { mockPokemon } = require("../config/setup");
+const request = require('supertest');
+const app = require('../../app');
+const Pokemon = require('../../models/pokemon');
+const { mockPokemon } = require('../config/setup');
 
-describe("GET /pokemon", () => {
+describe('GET /pokemon', () => {
   const testPokemon = [
     mockPokemon,
     {
       ...mockPokemon,
-      name: "Charmander",
-      types: ["fire"],
-      abilities: ["blaze"],
+      name: 'Charmander',
+      types: ['fire'],
+      abilities: ['blaze'],
     },
     {
       ...mockPokemon,
-      name: "Mew",
-      types: ["psychic"],
-      abilities: ["synchronize"],
+      name: 'Mew',
+      types: ['psychic'],
+      abilities: ['synchronize'],
     },
   ];
 
@@ -24,63 +24,63 @@ describe("GET /pokemon", () => {
     await Pokemon.deleteMany({});
   });
 
-  describe("when collection is empty", () => {
-    it("should return empty array", async () => {
-      const response = await request(app).get("/pokemon");
+  describe('when collection is empty', () => {
+    it('should return empty array', async () => {
+      const response = await request(app).get('/pokemon');
 
       expect(response.status).toBe(200);
       expect(response.body.data).toEqual([]);
     });
   });
 
-  describe("when pokemon exist", () => {
+  describe('when pokemon exist', () => {
     beforeEach(async () => {
       await Pokemon.create(testPokemon);
     });
 
-      it("should return all pokemon with essential fields", async () => {
-        const response = await request(app).get("/pokemon");
+    it('should return all pokemon with essential fields', async () => {
+      const response = await request(app).get('/pokemon');
 
-        expect(response.status).toBe(200);
-        expect(response.body.data).toHaveLength(testPokemon.length);
-        expect(response.body.data[0]).toEqual(
-          expect.objectContaining({
-            _id: expect.any(String),
-            name: mockPokemon.name,
-            thumbnailUrl: mockPokemon.thumbnailUrl,
-            types: mockPokemon.types,
-          })
+      expect(response.status).toBe(200);
+      expect(response.body.data).toHaveLength(testPokemon.length);
+      expect(response.body.data[0]).toEqual(
+        expect.objectContaining({
+          _id: expect.any(String),
+          name: mockPokemon.name,
+          thumbnailUrl: mockPokemon.thumbnailUrl,
+          types: mockPokemon.types,
+        }),
       );
     });
 
-    describe("filtering", () => {
+    describe('filtering', () => {
       const testFilters = [
-        { param: "types", value: "Fire", expectedName: "Charmander" },
-        { param: "types", value: "Electric", expectedName: "Pikachu" },
-        { param: "types", value: "Psychic", expectedName: "Mew" },
-        { param: "abilities", value: "Static", expectedName: "Pikachu" },
-        { param: "abilities", value: "Blaze", expectedName: "Charmander" },
-        { param: "abilities", value: "Synchronize", expectedName: "Mew" },
+        { param: 'types', value: 'Fire', expectedName: 'Charmander' },
+        { param: 'types', value: 'Electric', expectedName: 'Pikachu' },
+        { param: 'types', value: 'Psychic', expectedName: 'Mew' },
+        { param: 'abilities', value: 'Static', expectedName: 'Pikachu' },
+        { param: 'abilities', value: 'Blaze', expectedName: 'Charmander' },
+        { param: 'abilities', value: 'Synchronize', expectedName: 'Mew' },
       ];
-      // biome-ignore lint/complexity/noForEach: <explanation>
-      testFilters.forEach(({ param, value, expectedName }) => {
+
+      for (const { param, value, expectedName } of testFilters) {
         it(`should filter pokemon by ${param}: ${value}`, async () => {
           const response = await request(app).get(`/pokemon?${param}=${value}`);
           expect(response.status).toBe(200);
           expect(response.body.data).toHaveLength(1);
           expect(response.body.data[0].name).toBe(expectedName);
         });
-      });
+      }
 
-      it("should return empty array when no matches", async () => {
-        const response = await request(app).get("/pokemon?types=Rock");
+      it('should return empty array when no matches', async () => {
+        const response = await request(app).get('/pokemon?types=Rock');
 
         expect(response.status).toBe(200);
         expect(response.body.data).toEqual([]);
       });
     });
 
-    describe("pagination", () => {
+    describe('pagination', () => {
       const testPaginationCases = [
         {
           params: { limit: 1, page: 1 },
@@ -104,44 +104,46 @@ describe("GET /pokemon", () => {
         },
       ];
 
-      // biome-ignore lint/complexity/noForEach: <explanation>
-      testPaginationCases.forEach(({ params, expectedLength, expectedPagination }) => {
+      for (const {
+        params,
+        expectedLength,
+        expectedPagination,
+      } of testPaginationCases) {
         it(`should paginate correctly with limit ${params.limit} and page ${params.page}`, async () => {
           const response = await request(app).get(
-            `/pokemon?limit=${params.limit}&page=${params.page}`
+            `/pokemon?limit=${params.limit}&page=${params.page}`,
           );
 
           expect(response.status).toBe(200);
           expect(response.body.data).toHaveLength(expectedLength);
           expect(response.body.pagination).toEqual(
-            expect.objectContaining(expectedPagination)
+            expect.objectContaining(expectedPagination),
           );
         });
-      });
+      }
     });
   });
 
-  describe("error handling", () => {
+  describe('error handling', () => {
     const errorCases = [
       {
-        description: "invalid query parameters",
-        query: "invalid=true",
+        description: 'invalid query parameters',
+        query: 'invalid=true',
         expectedError: /invalid.*parameter/i,
       },
       {
-        description: "invalid pagination values",
-        query: "page=invalid",
+        description: 'invalid pagination values',
+        query: 'page=invalid',
         expectedError: /invalid.*pagination/i,
       },
       {
-        description: "negative pagination values",
-        query: "limit=-1&page=0",
+        description: 'negative pagination values',
+        query: 'limit=-1&page=0',
         expectedError: /invalid.*pagination/i,
       },
     ];
 
-    // biome-ignore lint/complexity/noForEach: <explanation>
-    errorCases.forEach(({ description, query, expectedError }) => {
+    for (const { description, query, expectedError } of errorCases) {
       it(`should handle ${description}`, async () => {
         const response = await request(app).get(`/pokemon?${query}`);
 
@@ -149,7 +151,6 @@ describe("GET /pokemon", () => {
         expect(response.body.error).toBeTruthy();
         expect(response.body.error).toMatch(expectedError);
       });
-    });
+    }
   });
 });
-

@@ -1,21 +1,21 @@
-const request = require("supertest");
-const mongoose = require("mongoose");
-const app = require("../../app");
-const Pokemon = require("../../models/pokemon");
-const { mockPokemon } = require("../config/setup");
+const request = require('supertest');
+const mongoose = require('mongoose');
+const app = require('../../app');
+const Pokemon = require('../../models/pokemon');
+const { mockPokemon } = require('../config/setup');
 
-describe("Pokemon Update and Delete Operations", () => {
-  describe("PUT /pokemon/:id", () => {
+describe('Pokemon Update and Delete Operations', () => {
+  describe('PUT /pokemon/:id', () => {
     let existingPokemon;
 
     beforeEach(async () => {
       existingPokemon = await Pokemon.create(mockPokemon);
     });
 
-    describe("when pokemon exists", () => {
-      it("should update pokemon with valid data", async () => {
+    describe('when pokemon exists', () => {
+      it('should update pokemon with valid data', async () => {
         const updateData = {
-          name: "Raichu",
+          name: 'Raichu',
           stats: { ...mockPokemon.stats, attack: 90 },
         };
 
@@ -29,7 +29,7 @@ describe("Pokemon Update and Delete Operations", () => {
             _id: existingPokemon._id.toString(),
             ...mockPokemon,
             ...updateData,
-          })
+          }),
         );
 
         const updatedPokemon = await Pokemon.findById(existingPokemon._id);
@@ -37,10 +37,10 @@ describe("Pokemon Update and Delete Operations", () => {
         expect(updatedPokemon.stats.attack).toBe(updateData.stats.attack);
       });
 
-      it("should validate update data types", async () => {
+      it('should validate update data types', async () => {
         const response = await request(app)
           .put(`/pokemon/${existingPokemon._id}`)
-          .send({ stats: { attack: "invalid" } });
+          .send({ stats: { attack: 'invalid' } });
 
         expect(response.status).toBe(400);
         expect(response.body.error).toBeTruthy();
@@ -48,22 +48,22 @@ describe("Pokemon Update and Delete Operations", () => {
       });
     });
 
-    describe("when pokemon does not exist", () => {
-      it("should return 404 with error message", async () => {
+    describe('when pokemon does not exist', () => {
+      it('should return 404 with error message', async () => {
         const fakeId = new mongoose.Types.ObjectId();
         const response = await request(app)
           .put(`/pokemon/${fakeId}`)
-          .send({ name: "Updated" });
+          .send({ name: 'Updated' });
 
         expect(response.status).toBe(404);
         expect(response.body.error).toBeTruthy();
         expect(response.body.error).toMatch(/not found/i);
       });
 
-      it("should handle invalid id format", async () => {
+      it('should handle invalid id format', async () => {
         const response = await request(app)
-          .put("/pokemon/invalid-id")
-          .send({ name: "Updated" });
+          .put('/pokemon/invalid-id')
+          .send({ name: 'Updated' });
 
         expect(response.status).toBe(400);
         expect(response.body.error).toMatch(/invalid.*id/i);
@@ -71,17 +71,17 @@ describe("Pokemon Update and Delete Operations", () => {
     });
   });
 
-  describe("DELETE /pokemon/:id", () => {
+  describe('DELETE /pokemon/:id', () => {
     let existingPokemon;
 
     beforeEach(async () => {
       existingPokemon = await Pokemon.create(mockPokemon);
     });
 
-    describe("when pokemon exists", () => {
-      it("should delete pokemon and return success message", async () => {
+    describe('when pokemon exists', () => {
+      it('should delete pokemon and return success message', async () => {
         const response = await request(app).delete(
-          `/pokemon/${existingPokemon._id}`
+          `/pokemon/${existingPokemon._id}`,
         );
 
         expect(response.status).toBe(200);
@@ -92,8 +92,8 @@ describe("Pokemon Update and Delete Operations", () => {
       });
     });
 
-    describe("when pokemon does not exist", () => {
-      it("should return 404 with error message", async () => {
+    describe('when pokemon does not exist', () => {
+      it('should return 404 with error message', async () => {
         const fakeId = new mongoose.Types.ObjectId();
         const response = await request(app).delete(`/pokemon/${fakeId}`);
 
@@ -102,8 +102,8 @@ describe("Pokemon Update and Delete Operations", () => {
         expect(response.body.error).toMatch(/not found/i);
       });
 
-      it("should handle invalid id format", async () => {
-        const response = await request(app).delete("/pokemon/invalid-id");
+      it('should handle invalid id format', async () => {
+        const response = await request(app).delete('/pokemon/invalid-id');
 
         expect(response.status).toBe(400);
         expect(response.body.error).toMatch(/invalid.*id/i);

@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 beforeAll(async () => {
   const mongoUri = process.env.MONGO_URI;

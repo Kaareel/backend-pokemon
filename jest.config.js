@@ -4,5 +4,5 @@ module.exports = {
   globalSetup: '<rootDir>/jest.global-setup.js',
   globalTeardown: '<rootDir>/jest.global-teardown.js',
   testTimeout: 5000,
-  verbose: true
+  verbose: true,
 };
