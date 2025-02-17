@@ -36,10 +36,10 @@ if (invalidParams.length > 0) {
         return res.status(400).send({ error: "Invalid pagination: limit must be a positive number" });
       }
   
-      // Calcular el valor de 'skip' para la paginación
+
       const skip = (pageNumber - 1) * pageLimit;
   
-      // Crear el filtro para los tipos y habilidades
+
       const filter = {};
       if (types) {
         filter.types = { $in: types.split(',').map(type => type.toLowerCase()) };
@@ -48,19 +48,19 @@ if (invalidParams.length > 0) {
         filter.abilities = { $in: abilities.split(',').map(ability => ability.toLowerCase()) };
       }
   
-      // Obtener los datos de la base de datos con los filtros
+
       const data = await pokemonModel.find(filter)
         .skip(skip)
         .limit(pageLimit)
         .select('_id name types thumbnailUrl');
   
-      // Obtener el total de documentos que coinciden con el filtro
+
       const totalCount = await pokemonModel.countDocuments(filter);
   
-      // Calcular el número total de páginas
+
       const totalPages = Math.ceil(totalCount / pageLimit);
   
-      // Responder con los datos y la paginación
+
       res.status(200).send({
         data,
         pagination: {

@@ -9,6 +9,7 @@ describe("GET /pokemon", () => {
     {
       ...mockPokemon,
       name: "Charmander",
+<<<<<<< HEAD
       types: ["fire"],
       abilities: ["blaze"],
     },
@@ -17,6 +18,16 @@ describe("GET /pokemon", () => {
       name: "Mew",
       types: ["psychic"],
       abilities: ["synchronize"],
+=======
+      types: ["Fire"],
+      abilities: ["Blaze"],
+    },
+    {
+      ...mockPokemon,
+      name: "Pikachu",
+      types: ["Electric"],
+      abilities: ["Static"],
+>>>>>>> 1000f3033e3f13c59fcbac6a0b9acc7632a90821
     },
   ];
 
@@ -38,6 +49,7 @@ describe("GET /pokemon", () => {
       await Pokemon.create(testPokemon);
     });
 
+<<<<<<< HEAD
       it("should return all pokemon with essential fields", async () => {
         const response = await request(app).get("/pokemon");
 
@@ -50,11 +62,26 @@ describe("GET /pokemon", () => {
             thumbnailUrl: mockPokemon.thumbnailUrl,
             types: mockPokemon.types,
           })
+=======
+    it("should return all pokemon with essential fields", async () => {
+      const response = await request(app).get("/pokemon");
+
+      expect(response.status).toBe(200);
+      expect(response.body.data).toHaveLength(testPokemon.length);
+      expect(response.body.data[0]).toEqual(
+        expect.objectContaining({
+          _id: expect.any(String),
+          name: mockPokemon.name,
+          thumbnailUrl: mockPokemon.thumbnailUrl,
+          types: mockPokemon.types,
+        })
+>>>>>>> 1000f3033e3f13c59fcbac6a0b9acc7632a90821
       );
     });
 
     describe("filtering", () => {
       const testFilters = [
+<<<<<<< HEAD
         { param: "types", value: "Fire", expectedName: "Charmander" },
         { param: "types", value: "Electric", expectedName: "Pikachu" },
         { param: "types", value: "Psychic", expectedName: "Mew" },
@@ -62,10 +89,22 @@ describe("GET /pokemon", () => {
         { param: "abilities", value: "Blaze", expectedName: "Charmander" },
         { param: "abilities", value: "Synchronize", expectedName: "Mew" },
       ];
+=======
+        { param: "type", value: "Fire", expectedName: "Charmander" },
+        { param: "type", value: "Electric", expectedName: "Pikachu" },
+        { param: "ability", value: "Static", expectedName: "Pikachu" },
+        { param: "ability", value: "Blaze", expectedName: "Charmander" },
+      ];
+
+>>>>>>> 1000f3033e3f13c59fcbac6a0b9acc7632a90821
       // biome-ignore lint/complexity/noForEach: <explanation>
       testFilters.forEach(({ param, value, expectedName }) => {
         it(`should filter pokemon by ${param}: ${value}`, async () => {
           const response = await request(app).get(`/pokemon?${param}=${value}`);
+<<<<<<< HEAD
+=======
+
+>>>>>>> 1000f3033e3f13c59fcbac6a0b9acc7632a90821
           expect(response.status).toBe(200);
           expect(response.body.data).toHaveLength(1);
           expect(response.body.data[0].name).toBe(expectedName);
@@ -73,7 +112,11 @@ describe("GET /pokemon", () => {
       });
 
       it("should return empty array when no matches", async () => {
+<<<<<<< HEAD
         const response = await request(app).get("/pokemon?types=Rock");
+=======
+        const response = await request(app).get("/pokemon?type=Rock");
+>>>>>>> 1000f3033e3f13c59fcbac6a0b9acc7632a90821
 
         expect(response.status).toBe(200);
         expect(response.body.data).toEqual([]);
