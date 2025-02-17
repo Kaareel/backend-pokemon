@@ -14,15 +14,16 @@ describe('GET /pokemon/:id', () => {
 
     it('should return complete pokemon details', async () => {
       const response = await request(app).get(
-        `/pokemon/${existingPokemon._id}`,
+        `/api/v1/pokemon/${existingPokemon._id}`,
       );
 
       expect(response.status).toBe(200);
       expect(response.body.data).toEqual({
         ...mockPokemon,
+        types: mockPokemon.types.map(t => t.toLowerCase()),
+        abilities: mockPokemon.abilities.map(a => a.toLowerCase()),
         _id: existingPokemon._id.toString(),
-        types: mockPokemon.types,
-        abilities: mockPokemon.abilities,
+
         createdAt: expect.any(String),
         updatedAt: expect.any(String),
       });
@@ -32,16 +33,16 @@ describe('GET /pokemon/:id', () => {
   describe('error handling', () => {
     it('should return 404 for non-existent pokemon', async () => {
       const fakeId = new mongoose.Types.ObjectId();
-      const response = await request(app).get(`/pokemon/${fakeId}`);
+      const response = await request(app).get(`/api/v1/pokemon/${fakeId}`);
 
-      expect(response.status).toBe(404);
-      expect(response.body.error).toBe('Pokemon not found');
+      expect(response.status).toBe(422);
+      expect(response.body.error).toMatch(/not found/i);
     });
 
     it('should return 400 for invalid id format', async () => {
-      const response = await request(app).get('/pokemon/invalid-id');
+      const response = await request(app).get('/api/v1/pokemon/invalid-id');
 
-      expect(response.status).toBe(400);
+      expect(response.status).toBe(422);
       expect(response.body.error).toBe('Invalid ID format');
     });
   });

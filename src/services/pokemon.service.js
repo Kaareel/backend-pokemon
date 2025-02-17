@@ -1,5 +1,5 @@
 const Pokemon = require('../models/pokemon.model');
-const { NotFoundError, BadRequestError } = require('../utils/error.utils');
+const { NotFoundError, ValidationError } = require('../utils/error.utils');
 const { buildFilter, buildPagination, normalizeStrings } = require('../utils/pokemon.utils');
 
 /**
@@ -13,15 +13,16 @@ const checkDuplicateName = async (name, excludeId = null) => {
 
   const existingPokemon = await Pokemon.findOne(query);
   if (existingPokemon) {
-    throw new BadRequestError('A Pokémon with this name already exists');
+    throw new ValidationError('A Pokémon with this name already exists');
   }
 };
 
 /**
  * Find all Pokemon that match the given filters
  */
-const findAll = async ({ types, abilities, page = 1, limit = 10 }) => {
-  const filter = buildFilter({ types, abilities });
+const findAll = async (params = {}) => {
+  const { page = 1, limit = 10 } = params;
+  const filter = buildFilter(params);
   const skip = (page - 1) * limit;
 
   const [data, totalCount] = await Promise.all([
@@ -45,7 +46,7 @@ const findAll = async ({ types, abilities, page = 1, limit = 10 }) => {
 const findById = async (id) => {
   const pokemon = await Pokemon.findById(id).lean();
   if (!pokemon) {
-    throw new NotFoundError('Pokemon');
+    throw new ValidationError('Pokemon not found');
   }
   return pokemon;
 };
@@ -75,7 +76,7 @@ const update = async (id, updateData) => {
   );
 
   if (!pokemon) {
-    throw new NotFoundError('Pokemon');
+    throw new ValidationError('Pokemon not found');
   }
 
   return pokemon;
@@ -87,7 +88,7 @@ const update = async (id, updateData) => {
 const remove = async (id) => {
   const pokemon = await Pokemon.findByIdAndDelete(id);
   if (!pokemon) {
-    throw new NotFoundError('Pokemon');
+    throw new ValidationError('Pokemon not found');
   }
   return { message: 'Pokemon deleted successfully' };
 };

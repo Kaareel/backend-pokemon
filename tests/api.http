@@ -1,34 +1,44 @@
-@baseUrl = http://localhost:3000
+@baseUrl = http://localhost:3000/api/v1
 @pokemonId = 65c2a1234567890123456789
 @invalidId = invalid-id
 
-### 1. List all Pokemon
+### List all Pokemon
 GET {{baseUrl}}/pokemon
 
-### 2. List Pokemon with filters and pagination
-# Filter by type
-GET {{baseUrl}}/pokemon?type=Electric
+### Filter Pokemon by type
+GET {{baseUrl}}/pokemon?types=electric
 
-# Filter by ability
-GET {{baseUrl}}/pokemon?ability=Static
+### Filter Pokemon by ability
+GET {{baseUrl}}/pokemon?abilities=static
 
-# Pagination
-GET {{baseUrl}}/pokemon?limit=2&offset=1
+### Filter Pokemon by multiple types
+GET {{baseUrl}}/pokemon?types=electric,fire
 
-# Invalid filters (should return 400)
-GET {{baseUrl}}/pokemon?limit=invalid&offset=-1
+### Filter Pokemon by multiple abilities
+GET {{baseUrl}}/pokemon?abilities=static,blaze
 
-### 3. Get a Pokemon by ID
-# Get existing Pokemon
+### Filter Pokemon by type and ability
+GET {{baseUrl}}/pokemon?types=electric&abilities=static
+
+### Get Pokemon with pagination
+GET {{baseUrl}}/pokemon?page=1&limit=10
+
+### Test invalid pagination parameters
+GET {{baseUrl}}/pokemon?limit=invalid&page=-1
+
+### Test invalid Pokemon type
+GET {{baseUrl}}/pokemon?types=invalid-type
+
+### Get Pokemon by valid ID
 GET {{baseUrl}}/pokemon/{{pokemonId}}
 
-# Try to get non-existent Pokemon (should return 404)
+### Get non-existent Pokemon
 GET {{baseUrl}}/pokemon/65c2a1234567890123456780
 
-# Invalid ID (should return 500)
+### Get Pokemon with invalid ID format
 GET {{baseUrl}}/pokemon/{{invalidId}}
 
-### 4. Create a new Pokemon
+### Create a new Pokemon
 POST {{baseUrl}}/pokemon
 Content-Type: application/json
 
@@ -48,7 +58,7 @@ Content-Type: application/json
     }
 }
 
-### 5. Create Pokemon with invalid data (should return 400)
+### Create Pokemon with missing required fields
 POST {{baseUrl}}/pokemon
 Content-Type: application/json
 
@@ -56,7 +66,7 @@ Content-Type: application/json
     "name": "Pikachu"
 }
 
-### 6. Create Pokemon with invalid stats (should return 400)
+### Create Pokemon with invalid stats
 POST {{baseUrl}}/pokemon
 Content-Type: application/json
 
@@ -76,7 +86,7 @@ Content-Type: application/json
     }
 }
 
-### 7. Update an existing Pokemon
+### Update an existing Pokemon
 PUT {{baseUrl}}/pokemon/{{pokemonId}}
 Content-Type: application/json
 
@@ -92,7 +102,7 @@ Content-Type: application/json
     }
 }
 
-### 8. Update non-existent Pokemon (should return 404)
+### Update non-existent Pokemon
 PUT {{baseUrl}}/pokemon/65c2a1234567890123456780
 Content-Type: application/json
 
@@ -100,7 +110,7 @@ Content-Type: application/json
     "name": "Raichu"
 }
 
-### 9. Update Pokemon with invalid data (should return 400)
+### Update Pokemon with invalid stats
 PUT {{baseUrl}}/pokemon/{{pokemonId}}
 Content-Type: application/json
 
@@ -110,17 +120,14 @@ Content-Type: application/json
     }
 }
 
-### 10. Delete a Pokemon
+### Delete a Pokemon
 DELETE {{baseUrl}}/pokemon/{{pokemonId}}
+
+### Delete non-existent Pokemon
+DELETE {{baseUrl}}/pokemon/65c2a1234567890123456780
 
 ### 11. Delete non-existent Pokemon (should return 404)
 DELETE {{baseUrl}}/pokemon/65c2a1234567890123456780
 
 ### 12. Delete Pokemon with invalid ID (should return 500)
 DELETE {{baseUrl}}/pokemon/{{invalidId}}
-
-### 13. Initialize the database from PokeAPI
-POST {{baseUrl}}/initialize-db
-Content-Type: application/json
-
-{}

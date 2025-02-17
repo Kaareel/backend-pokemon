@@ -9,8 +9,9 @@ const errorHandler = (err, req, res, next) => {
 
   // Mongoose validation error
   if (err.name === 'ValidationError') {
+    const messages = Object.values(err.errors).map(e => e.message);
     return res.status(422).json({
-      error: Object.values(err.errors).map(e => e.message).join(', '),
+      error: messages.length > 0 ? messages.join(', ') : 'Validation failed',
     });
   }
 
@@ -23,7 +24,7 @@ const errorHandler = (err, req, res, next) => {
 
   // Mongoose cast error (invalid ID)
   if (err.name === 'CastError') {
-    return res.status(400).json({
+    return res.status(422).json({
       error: 'Invalid ID format',
     });
   }

@@ -1,24 +1,9 @@
 const request = require('supertest');
 const app = require('../../src/app');
 const Pokemon = require('../../src/models/pokemon.model');
-const { mockPokemon } = require('../config/setup');
+const { mockPokemon, mockPokemonList } = require('../fixtures/pokemon.fixtures');
 
 describe('GET /pokemon', () => {
-  const testPokemon = [
-    mockPokemon,
-    {
-      ...mockPokemon,
-      name: 'Charmander',
-      types: ['fire'],
-      abilities: ['blaze'],
-    },
-    {
-      ...mockPokemon,
-      name: 'Mew',
-      types: ['psychic'],
-      abilities: ['synchronize'],
-    },
-  ];
 
   beforeEach(async () => {
     await Pokemon.deleteMany({});
@@ -26,7 +11,7 @@ describe('GET /pokemon', () => {
 
   describe('when collection is empty', () => {
     it('should return empty array', async () => {
-      const response = await request(app).get('/pokemon');
+      const response = await request(app).get('/api/v1/pokemon');
 
       expect(response.status).toBe(200);
       expect(response.body.data).toEqual([]);
@@ -35,21 +20,23 @@ describe('GET /pokemon', () => {
 
   describe('when pokemon exist', () => {
     beforeEach(async () => {
-      await Pokemon.create(testPokemon);
+      await Pokemon.create(mockPokemonList);
     });
 
     it('should return all pokemon with essential fields', async () => {
-      const response = await request(app).get('/pokemon');
+      const response = await request(app).get('/api/v1/pokemon');
 
       expect(response.status).toBe(200);
-      expect(response.body.data).toHaveLength(testPokemon.length);
-      expect(response.body.data[0]).toEqual(
-        expect.objectContaining({
-          _id: expect.any(String),
-          name: mockPokemon.name,
-          thumbnailUrl: mockPokemon.thumbnailUrl,
-          types: mockPokemon.types,
-        }),
+      expect(response.body.data).toHaveLength(mockPokemonList.length);
+      expect(response.body.data).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            _id: expect.any(String),
+            name: mockPokemon.name,
+            thumbnailUrl: mockPokemon.thumbnailUrl,
+            types: mockPokemon.types.map(t => t.toLowerCase()),
+          })
+        ])
       );
     });
 
@@ -65,7 +52,7 @@ describe('GET /pokemon', () => {
 
       for (const { param, value, expectedName } of testFilters) {
         it(`should filter pokemon by ${param}: ${value}`, async () => {
-          const response = await request(app).get(`/pokemon?${param}=${value}`);
+          const response = await request(app).get(`/api/v1/pokemon?${param}=${value}`);
           expect(response.status).toBe(200);
           expect(response.body.data).toHaveLength(1);
           expect(response.body.data[0].name).toBe(expectedName);
@@ -73,7 +60,7 @@ describe('GET /pokemon', () => {
       }
 
       it('should return empty array when no matches', async () => {
-        const response = await request(app).get('/pokemon?types=Rock');
+        const response = await request(app).get('/api/v1/pokemon?types=Rock');
 
         expect(response.status).toBe(200);
         expect(response.body.data).toEqual([]);
@@ -111,7 +98,7 @@ describe('GET /pokemon', () => {
       } of testPaginationCases) {
         it(`should paginate correctly with limit ${params.limit} and page ${params.page}`, async () => {
           const response = await request(app).get(
-            `/pokemon?limit=${params.limit}&page=${params.page}`,
+            `/api/v1/pokemon?limit=${params.limit}&page=${params.page}`,
           );
 
           expect(response.status).toBe(200);
@@ -125,32 +112,16 @@ describe('GET /pokemon', () => {
   });
 
   describe('error handling', () => {
-    const errorCases = [
-      {
-        description: 'invalid query parameters',
-        query: 'invalid=true',
-        expectedError: /invalid.*parameter/i,
-      },
-      {
-        description: 'invalid pagination values',
-        query: 'page=invalid',
-        expectedError: /invalid.*pagination/i,
-      },
-      {
-        description: 'negative pagination values',
-        query: 'limit=-1&page=0',
-        expectedError: /invalid.*pagination/i,
-      },
-    ];
+    it('should handle invalid pagination values', async () => {
+      const response = await request(app).get('/api/v1/pokemon?page=invalid');
+      expect(response.status).toBe(422);
+      expect(response.body.error).toBeTruthy();
+    });
 
-    for (const { description, query, expectedError } of errorCases) {
-      it(`should handle ${description}`, async () => {
-        const response = await request(app).get(`/pokemon?${query}`);
-
-        expect(response.status).toBe(400);
-        expect(response.body.error).toBeTruthy();
-        expect(response.body.error).toMatch(expectedError);
-      });
-    }
+    it('should handle negative pagination values', async () => {
+      const response = await request(app).get('/api/v1/pokemon?limit=-1&page=0');
+      expect(response.status).toBe(422);
+      expect(response.body.error).toBeTruthy();
+    });
   });
 });

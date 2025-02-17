@@ -1,5 +1,7 @@
-const buildFilter = ({ types, abilities }) => {
+const buildFilter = (params = {}) => {
   const filter = {};
+  const { types, abilities } = params;
+
   if (types) {
     filter.types = { $in: types.split(',').map(type => type.toLowerCase()) };
   }

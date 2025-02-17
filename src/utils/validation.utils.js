@@ -1,4 +1,4 @@
-const { BadRequestError } = require('./error.utils');
+const { ValidationError } = require('./error.utils');
 
 /**
  * Validates data against a schema and returns the validated value
@@ -12,7 +12,7 @@ const validateSchema = async (data, schema, errorMessage = null) => {
   try {
     return await schema.validate(data, { abortEarly: false });
   } catch (error) {
-    throw new BadRequestError(errorMessage || error.errors[0]);
+    throw new ValidationError(errorMessage || error.errors[0]);
   }
 };
 
