@@ -15,7 +15,6 @@ const connectDatabase = async () => {
 
         console.log('✅ Successfully connected to MongoDB');
 
-        // Handle connection events
         mongoose.connection.on('error', (error) => {
             console.error('❌ MongoDB connection error:', error);
         });
@@ -24,7 +23,6 @@ const connectDatabase = async () => {
             console.warn('⚠️ MongoDB disconnected');
         });
 
-        // Handle process termination
         process.on('SIGINT', async () => {
             try {
                 await mongoose.connection.close();
@@ -38,7 +36,7 @@ const connectDatabase = async () => {
 
     } catch (error) {
         console.error('❌ Failed to connect to MongoDB:', error.message);
-        throw error; // Re-throw to be handled by the caller
+        throw error;
     }
 };
 

@@ -114,7 +114,6 @@ if (invalidParams.length > 0) {
         res.status(400).send({ error: err.message });
     }
     }
-
 exports.updateData = async (req, res) => {
     try {
         const id = parseId(req.params.id);

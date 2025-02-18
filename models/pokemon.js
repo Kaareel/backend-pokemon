@@ -5,8 +5,8 @@ const PokemonSchema = new mongoose.Schema(
         name: { type: String, required: true, unique: true},
         thumbnailUrl: { type: String, required: true },
         largeImageUrl: { type: String, required: true },
-        types: { type: [String], required: true }, // Array de cadenas
-        abilities: { type: [String], required: true }, // Array de cadenas
+        types: { type: [String], required: true },
+        abilities: { type: [String], required: true }, 
         stats: {
             hp: { type: Number, min: 1, required: true },
             attack: { type: Number, min: 1, required: true },
