@@ -43,14 +43,21 @@ describe("GET /pokemon", () => {
 
         expect(response.status).toBe(200);
         expect(response.body.data).toHaveLength(testPokemon.length);
-        expect(response.body.data[0]).toEqual(
-          expect.objectContaining({
-            _id: expect.any(String),
-            name: mockPokemon.name,
-            thumbnailUrl: mockPokemon.thumbnailUrl,
-            types: mockPokemon.types,
-          })
-      );
+        
+        for (const pokemon of response.body.data) {
+          expect(pokemon).toEqual(
+            expect.objectContaining({
+              _id: expect.any(String),
+              name: expect.any(String),
+              thumbnailUrl: expect.any(String),
+              types: expect.any(Array)
+            })
+          );
+        }
+
+        const names = response.body.data.map(p => p.name).sort();
+        const expectedNames = testPokemon.map(p => p.name).sort();
+        expect(names).toEqual(expectedNames);
     });
 
     describe("filtering", () => {
